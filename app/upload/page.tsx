@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, Video, Image as ImageIcon, File, X, CheckCircle, Loader } from 'lucide-react';
+import { RequireAuth } from '../../components/RequireAuth';
+import { AppNav } from '../../components/AppNav';
 
 interface UploadedFile {
   id: string;
@@ -135,7 +137,8 @@ export default function UploadPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <RequireAuth>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -154,22 +157,7 @@ export default function UploadPage() {
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            <button className="px-4 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
-              Upload & Process
-            </button>
-            <button className="px-4 py-4 text-sm font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300">
-              My Library
-            </button>
-            <button className="px-4 py-4 text-sm font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300">
-              Study Insights
-            </button>
-          </div>
-        </div>
-      </nav>
+      <AppNav />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-6">
@@ -322,7 +310,7 @@ export default function UploadPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Storage Used</span>
-                  <span className="text-sm font-medium text-gray-900">153 MB / 5 GB</span>
+                  <span className="text-sm font-medium text-gray-900">0 MB / 5 GB</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-green-500 h-2 rounded-full" style={{ width: '3%' }} />
@@ -338,6 +326,7 @@ export default function UploadPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

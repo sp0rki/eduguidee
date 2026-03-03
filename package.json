@@ -9,12 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/auth-js": "2.98.0",
+    "@supabase/supabase-js": "2.98.0",
     "lucide-react": "^0.574.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@babel/parser": "^7.29.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "25.2.3",
     "@types/react": "19.2.14",

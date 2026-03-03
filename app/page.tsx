@@ -71,12 +71,18 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="text-sm font-medium text-gray-700 hover:text-gray-900">
+              <Link
+                href="/auth"
+                className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              >
                 Sign In
-              </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+              </Link>
+              <Link
+                href="/auth"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+              >
                 Get Started
-              </button>
+              </Link>
             </div>
           </div>
         </div>

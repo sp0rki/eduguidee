@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, BookOpen, FileText, Video, Image, Calendar, Clock, Star, MoreVertical, Download, Trash2 } from 'lucide-react';
+import { RequireAuth } from '../../components/RequireAuth';
+import { AppNav } from '../../components/AppNav';
 
 interface StudyMaterial {
   id: string;
@@ -16,77 +18,15 @@ interface StudyMaterial {
 }
 
 export default function LibraryPage() {
-  const [selectedSubject, setSelectedSubject] = useState('All Subjects');
   const [searchQuery, setSearchQuery] = useState('');
-  const [materials, setMaterials] = useState<StudyMaterial[]>([
-    {
-      id: '1',
-      title: 'Introduction to Calculus',
-      subject: 'Mathematics',
-      type: 'pdf',
-      uploadDate: '2024-02-10',
-      lastAccessed: '2024-02-15',
-      size: '2.3 MB',
-      isFavorite: true,
-      progress: 65
-    },
-    {
-      id: '2',
-      title: 'World War II Documentary',
-      subject: 'History',
-      type: 'video',
-      uploadDate: '2024-02-08',
-      lastAccessed: '2024-02-14',
-      size: '145 MB',
-      isFavorite: false,
-      progress: 30
-    },
-    {
-      id: '3',
-      title: 'Chemistry Lab Safety',
-      subject: 'Chemistry',
-      type: 'document',
-      uploadDate: '2024-02-05',
-      lastAccessed: '2024-02-13',
-      size: '1.8 MB',
-      isFavorite: true
-    },
-    {
-      id: '4',
-      title: 'Cell Structure Diagram',
-      subject: 'Biology',
-      type: 'image',
-      uploadDate: '2024-02-01',
-      lastAccessed: '2024-02-12',
-      size: '850 KB',
-      isFavorite: false
-    },
-    {
-      id: '5',
-      title: 'Physics Motion Notes',
-      subject: 'Physics',
-      type: 'pdf',
-      uploadDate: '2024-01-28',
-      lastAccessed: '2024-02-11',
-      size: '3.1 MB',
-      isFavorite: true,
-      progress: 100
-    }
-  ]);
+  // start empty; items will be added by the user on upload
+  const [materials, setMaterials] = useState<Array<StudyMaterial>>([]);
 
-  const subjects = ['All Subjects', 'Mathematics', 'History', 'Chemistry', 'Biology', 'Physics', 'English', 'Computer Science'];
+  // will populate dynamically once user starts interacting
+  const recentActivities: Array<{ action: string; material: string; time: string }> = []; 
 
-  const recentActivities = [
-    { action: 'Reviewed', material: 'Introduction to Calculus', time: '2 hours ago' },
-    { action: 'Uploaded', material: 'Chemistry Lab Safety', time: '1 day ago' },
-    { action: 'Generated Quiz', material: 'Physics Motion Notes', time: '2 days ago' }
-  ];
-
-  const studyTips = [
-    'Break study sessions into 25-minute intervals',
-    'Review materials within 24 hours of uploading',
-    'Use active recall for better retention'
-  ];
+  // optional tips can be added later
+  const studyTips: string[] = [];
 
   const toggleFavorite = (id: string) => {
     setMaterials(materials.map(material => 
@@ -109,73 +49,40 @@ export default function LibraryPage() {
   };
 
   const filteredMaterials = materials.filter(material => {
-    const matchesSubject = selectedSubject === 'All Subjects' || material.subject === selectedSubject;
     const matchesSearch = material.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          material.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSubject && matchesSearch;
+    return matchesSearch;
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <BookOpen className="w-8 h-8 text-blue-600" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
-                <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
+    <RequireAuth>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-8 h-8 text-blue-600" />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
+                  <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
+                </div>
               </div>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                <span className="text-sm font-medium text-gray-700">My Account</span>
+              </button>
             </div>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-              <span className="text-sm font-medium text-gray-700">My Account</span>
-            </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            <button className="px-4 py-4 text-sm font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300">
-              Upload & Process
-            </button>
-            <button className="px-4 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
-              My Library
-            </button>
-            <button className="px-4 py-4 text-sm font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300">
-              Study Insights
-            </button>
-          </div>
-        </div>
-      </nav>
+        <AppNav />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex gap-6">
           {/* Main Content */}
           <div className="flex-1">
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">My Study Materials</h2>
-              
-              {/* Filters and Search */}
-              <div className="flex flex-wrap gap-3 mb-6">
-                {subjects.map(subject => (
-                  <button
-                    key={subject}
-                    onClick={() => setSelectedSubject(subject)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                      selectedSubject === subject
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {subject}
-                  </button>
-                ))}
-              </div>
-
               <div className="relative mb-6">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -306,7 +213,7 @@ export default function LibraryPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Storage Used</span>
-                  <span className="text-sm font-medium text-gray-900">153 MB / 5 GB</span>
+                  <span className="text-sm font-medium text-gray-900">0 MB / 5 GB</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-green-500 h-2 rounded-full" style={{ width: '3%' }} />
@@ -322,6 +229,7 @@ export default function LibraryPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>  {/* close min-h-screen container */}
+    </RequireAuth>
   );
 }
