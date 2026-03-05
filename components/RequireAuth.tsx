@@ -2,7 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
+
+const DEMO_SESSION_KEY = 'eduguide_demo_session';
+
+export function hasDemoSession(): boolean {
+  if (typeof window === 'undefined') return false;
+  return sessionStorage.getItem(DEMO_SESSION_KEY) === '1';
+}
+
+export function setDemoSession(): void {
+  if (typeof window !== 'undefined') sessionStorage.setItem(DEMO_SESSION_KEY, '1');
+}
+
+export function clearDemoSession(): void {
+  if (typeof window !== 'undefined') sessionStorage.removeItem(DEMO_SESSION_KEY);
+}
 
 interface RequireAuthProps {
   children: React.ReactNode;
@@ -16,6 +31,16 @@ export function RequireAuth({ children }: RequireAuthProps) {
     let mounted = true;
 
     const checkSession = async () => {
+      if (!isSupabaseConfigured) {
+        if (!mounted) return;
+        if (hasDemoSession()) {
+          setChecking(false);
+          return;
+        }
+        router.replace('/auth');
+        return;
+      }
+
       const { data } = await supabase.auth.getSession();
       if (!mounted) return;
 
@@ -27,6 +52,10 @@ export function RequireAuth({ children }: RequireAuthProps) {
     };
 
     checkSession();
+
+    if (!isSupabaseConfigured) {
+      return () => { mounted = false; };
+    }
 
     const {
       data: { subscription },

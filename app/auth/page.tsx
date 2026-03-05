@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../../lib/supabaseClient';
+import { setDemoSession } from '../../components/RequireAuth';
 import { useRouter } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
 
@@ -21,6 +22,12 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
+      if (!isSupabaseConfigured) {
+        setDemoSession();
+        router.push('/upload');
+        return;
+      }
+
       if (mode === 'login') {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
@@ -37,7 +44,14 @@ export default function AuthPage() {
 
       router.push('/upload');
     } catch (err: any) {
-      setError(err.message ?? 'Something went wrong. Please try again.');
+      const msg = err?.message ?? '';
+      if (msg === 'Failed to fetch' || msg.toLowerCase().includes('fetch')) {
+        setError(
+          'Cannot reach Supabase. Please check that NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local are set to your real Supabase project credentials (from Dashboard → Settings → API).'
+        );
+      } else {
+        setError(msg || 'Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -47,6 +61,11 @@ export default function AuthPage() {
     setError(null);
     setLoading(true);
     try {
+      if (!isSupabaseConfigured) {
+        setDemoSession();
+        router.push('/upload');
+        return;
+      }
       const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
@@ -54,12 +73,19 @@ export default function AuthPage() {
         },
       });
       if (oauthError) throw oauthError;
-      // Supabase will redirect; data.url may be used if needed
       if (data?.url) {
         window.location.href = data.url;
       }
     } catch (err: any) {
-      setError(err.message ?? 'Could not start social login. Please try again.');
+      const msg = err?.message ?? '';
+      if (msg === 'Failed to fetch' || msg.toLowerCase().includes('fetch')) {
+        setError(
+          'Cannot reach Supabase. Please check that NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local are set to your real Supabase project credentials.'
+        );
+      } else {
+        setError(msg || 'Could not start social login. Please try again.');
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -74,6 +100,9 @@ export default function AuthPage() {
             <p className="text-sm text-gray-600">
               {mode === 'login' ? 'Welcome back! Sign in to continue.' : 'Create your EduGuide account.'}
             </p>
+            {!isSupabaseConfigured && (
+              <p className="text-xs text-amber-600 mt-1">Demo mode — Supabase not configured</p>
+            )}
           </div>
         </div>
 

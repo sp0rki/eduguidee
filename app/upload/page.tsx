@@ -110,6 +110,49 @@ export default function UploadPage() {
     });
   };
 
+  const extractPdfText = async (file: File): Promise<string> => {
+    try {
+      const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsArrayBuffer(file);
+      });
+
+      const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+      const formData = new FormData();
+      formData.append('file', blob, file.name);
+
+      console.log('Extracting PDF:', file.name, 'Size:', file.size);
+
+      const response = await fetch('/api/pdf-extract', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const responseData = await response.json();
+      
+      console.log('PDF extract response status:', response.status);
+      console.log('PDF extract response data:', responseData);
+
+      if (!response.ok) {
+        const errorMsg = responseData?.error || responseData?.message || 'Unknown error from server';
+        console.error('PDF extract failed:', errorMsg, responseData);
+        throw new Error(errorMsg);
+      }
+
+      if (!responseData.text || responseData.text.trim().length === 0) {
+        throw new Error('No text content extracted from PDF. Try a text-based PDF instead of image-based.');
+      }
+
+      console.log('PDF extracted successfully:', responseData.text.length, 'characters from', responseData.pages, 'pages');
+      return responseData.text;
+    } catch (error: any) {
+      console.error('PDF extraction error:', error?.message || error);
+      throw error;
+    }
+  };
+
   const runAiAction = async (action: 'summarize' | 'quiz' | 'analyze' | 'keypoints') => {
     if (files.length === 0) return;
 
@@ -128,15 +171,25 @@ export default function UploadPage() {
 
     try {
       let text = '';
+      const isPdf = target.file.type === 'application/pdf' || target.name.toLowerCase().endsWith('.pdf');
+      
       if (
         target.file.type.startsWith('text/') ||
         target.name.toLowerCase().endsWith('.txt')
       ) {
         text = await readFileAsText(target.file);
+      } else if (isPdf) {
+        text = await extractPdfText(target.file);
       } else {
         text = `User uploaded file "${target.name}" of type ${target.type} and size ${formatFileSize(
           target.size,
         )}.`;
+      }
+
+      if (!text || text.trim().length === 0) {
+        setAiError('Could not extract text from the file. Please ensure the file contains readable text.');
+        setAiLoading(false);
+        return;
       }
 
       const response = await fetch('/api/ai', {
