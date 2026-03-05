@@ -7,6 +7,7 @@ import { BookOpen, Sun, Moon } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { RequireAuth } from '../../components/RequireAuth';
 import { useTheme } from '../../components/ThemeProvider';
+import { PageTransition } from '../../components/PageTransition';
 
 export default function AccountPage() {
   const [email, setEmail] = useState<string | null>(null);
@@ -54,6 +55,7 @@ export default function AccountPage() {
 
   return (
     <RequireAuth>
+      <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex items-center justify-center px-4 transition-colors duration-300">
         <button
           onClick={toggleTheme}
@@ -123,6 +125,7 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+      </PageTransition>
     </RequireAuth>
   );
 }

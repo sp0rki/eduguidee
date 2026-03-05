@@ -30,8 +30,14 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [navigating, setNavigating] = useState(false);
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+
+  const navigateTo = (path: string) => {
+    setNavigating(true);
+    setTimeout(() => router.push(path), 320);
+  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +47,7 @@ export default function AuthPage() {
     try {
       if (!isSupabaseConfigured) {
         setDemoSession();
-        router.push('/upload');
+        navigateTo('/upload');
         return;
       }
 
@@ -59,7 +65,7 @@ export default function AuthPage() {
         if (signUpError) throw signUpError;
       }
 
-      router.push('/upload');
+      navigateTo('/upload');
     } catch (err: any) {
       const msg = err?.message ?? '';
       if (msg === 'Failed to fetch' || msg.toLowerCase().includes('fetch')) {
@@ -80,7 +86,7 @@ export default function AuthPage() {
     try {
       if (!isSupabaseConfigured) {
         setDemoSession();
-        router.push('/upload');
+        navigateTo('/upload');
         return;
       }
       const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
@@ -117,7 +123,7 @@ export default function AuthPage() {
         {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
       </button>
 
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8 animate-scale-in transition-colors duration-300">
+      <div className={`w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8 transition-colors duration-300 ${navigating ? 'page-exit' : 'animate-scale-in'}`}>
         <div className="flex items-center justify-center mb  -6 space-x-3 mb-6">
           <BookOpen className="w-8 h-8 text-blue-600" />
           <div>

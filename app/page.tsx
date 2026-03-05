@@ -330,7 +330,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>&copy; 2024 EduGuide. All rights reserved.</p>
+            <p>&copy; 2025 EduGuide. All rights reserved.</p>
           </div>
         </div>
       </footer>

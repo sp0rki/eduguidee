@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { TrendingUp, Target, Award, BookOpen, BarChart3 } from 'lucide-react';
 import { RequireAuth } from '../../components/RequireAuth';
 import { AppNav } from '../../components/AppNav';
+import { useActivity, getRelativeTime } from '../../components/ActivityProvider';
+import { PageTransition } from '../../components/PageTransition';
 
 const studyProgress: Array<{
   subject: string;
@@ -24,20 +26,15 @@ const performanceTrends = [
   { date: 'Sun', score: 87 },
 ];
 
-const recentActivities: Array<{
-  action: string;
-  material: string;
-  time: string;
-  score?: number;
-}> = [];
-
 const recommendations: string[] = [];
 
 export default function StudyInsightsPage() {
   const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'year'>('week');
+  const { activities } = useActivity();
 
   return (
     <RequireAuth>
+      <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 transition-colors duration-300">
         <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -204,16 +201,16 @@ export default function StudyInsightsPage() {
             <div className="w-80 space-y-6">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-300">
                 <h3 className="font-bold text-gray-900 dark:text-white mb-4">Recent Activities</h3>
-                {recentActivities.length === 0 ? (
+                {activities.length === 0 ? (
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Nothing here yet. Once you start uploading materials and taking quizzes,
                     your recent activity will show up in this panel.
                   </p>
                 ) : (
                   <div className="space-y-3">
-                    {recentActivities.map((activity, index) => (
+                    {activities.map((activity) => (
                       <div
-                        key={index}
+                        key={activity.id}
                         className="flex items-start space-x-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0"
                       >
                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
@@ -222,12 +219,7 @@ export default function StudyInsightsPage() {
                             <span className="font-medium">{activity.action}</span>{' '}
                             {activity.material}
                           </p>
-                          {activity.score && (
-                            <p className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">
-                              Score: {activity.score}%
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.time}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{getRelativeTime(activity.timestamp)}</p>
                         </div>
                       </div>
                     ))}
@@ -274,6 +266,7 @@ export default function StudyInsightsPage() {
           </div>
         </div>
       </div>
+      </PageTransition>
     </RequireAuth>
   );
 }
