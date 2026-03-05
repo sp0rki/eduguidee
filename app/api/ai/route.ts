@@ -69,7 +69,6 @@ Format your response as a JSON array of objects with fields: "question", "option
       return { questions };
     }
     
-    // Fallback if JSON parsing fails
     return {
       questions: [
         {

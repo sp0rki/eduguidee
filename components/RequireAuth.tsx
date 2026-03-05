@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 
@@ -26,6 +26,12 @@ interface RequireAuthProps {
 export function RequireAuth({ children }: RequireAuthProps) {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
+
+  useLayoutEffect(() => {
+    if (!isSupabaseConfigured && hasDemoSession()) {
+      setChecking(false);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -73,7 +79,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-sm text-gray-600">Checking your session...</div>
       </div>
     );

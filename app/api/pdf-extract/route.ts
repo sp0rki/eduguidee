@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// pdf-parse v1.x: import from lib directly to bypass index.js debug block (which reads test/data/*.pdf)
 async function extractTextFromPdf(buffer: Buffer): Promise<{ text: string; numpages: number }> {
   const pdfParse = (await import('pdf-parse/lib/pdf-parse.js')).default;
   const data = await pdfParse(buffer);
@@ -28,7 +27,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if it's a PDF
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
     
     if (!isPdf) {
@@ -38,13 +36,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Read file as Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     console.log('[PDF] Buffer created, size:', buffer.length);
 
-    // Extract text using pdf-parse v2 API (PDFParse class)
     console.log('[PDF] Starting parse...');
     const data = await extractTextFromPdf(buffer);
     
