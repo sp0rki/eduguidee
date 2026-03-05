@@ -69,7 +69,6 @@ export default function UploadPage() {
 
     setFiles(prev => [...prev, ...newFiles]);
 
-    // Simulate upload and processing
     newFiles.forEach(file => {
       simulateUpload(file.id);
     });
@@ -279,23 +278,22 @@ export default function UploadPage() {
 
   return (
     <RequireAuth>
-      <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 transition-colors duration-300">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <FileText className="w-8 h-8 text-blue-600" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
-                <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">EduGuide</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">AI-Assisted Learning Companion</p>
               </div>
             </div>
             <Link
               href="/account"
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
             >
-              <span className="text-sm font-medium text-gray-700">My Account</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">My Account</span>
             </Link>
           </div>
         </div>
@@ -305,27 +303,25 @@ export default function UploadPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-6">
-          {/* Main Content */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Upload Study Materials</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6 transition-colors duration-300">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Upload Study Materials</h2>
 
-              {/* Upload Area */}
               <div
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`border-2 border-dashed rounded-lg p-12 text-center transition ${
                   isDragging
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/40 hover:border-gray-400 dark:hover:border-gray-500'
                 }`}
               >
-                <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <Upload className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   Drop files here or click to browse
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Supports PDF, DOCX, images, videos, and more
                 </p>
                 <input
@@ -344,16 +340,15 @@ export default function UploadPage() {
                 </button>
               </div>
 
-              {/* Action Buttons */}
               {files.length > 0 && (
-                <div className="mt-6 bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">What would you like to do?</h3>
+                <div className="mt-6 bg-gray-50 dark:bg-gray-900/60 rounded-lg p-4">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">What would you like to do?</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     <button
                       type="button"
                       disabled={aiLoading}
                       onClick={() => runAiAction('summarize')}
-                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                      className="px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition text-sm font-medium text-gray-700 dark:text-gray-200 disabled:opacity-60"
                     >
                       📝 Summarize
                     </button>
@@ -361,7 +356,7 @@ export default function UploadPage() {
                       type="button"
                       disabled={aiLoading}
                       onClick={() => runAiAction('quiz')}
-                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                      className="px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition text-sm font-medium text-gray-700 dark:text-gray-200 disabled:opacity-60"
                     >
                       ❓ Generate Quiz
                     </button>
@@ -369,7 +364,7 @@ export default function UploadPage() {
                       type="button"
                       disabled={aiLoading}
                       onClick={() => runAiAction('analyze')}
-                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                      className="px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition text-sm font-medium text-gray-700 dark:text-gray-200 disabled:opacity-60"
                     >
                       🔍 Analyze Content
                     </button>
@@ -377,7 +372,7 @@ export default function UploadPage() {
                       type="button"
                       disabled={aiLoading}
                       onClick={() => runAiAction('keypoints')}
-                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                      className="px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition text-sm font-medium text-gray-700 dark:text-gray-200 disabled:opacity-60"
                     >
                       💡 Extract Key Points
                     </button>
@@ -388,15 +383,15 @@ export default function UploadPage() {
                     </p>
                   )}
                   {quiz && aiAction === 'quiz' && (
-                    <div className="mt-4 bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-800 max-h-96 overflow-y-auto space-y-4">
+                    <div className="mt-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm text-gray-800 dark:text-gray-200 max-h-96 overflow-y-auto space-y-4">
                       {quiz.map((q, qi) => {
                         const selected = selectedAnswers[qi] ?? null;
                         return (
-                          <div key={qi} className="border-b border-gray-100 pb-4 last:border-0">
+                          <div key={qi} className="border-b border-gray-100 dark:border-gray-700 pb-4 last:border-0">
                             <p className="font-semibold mb-2">
                               Question {qi + 1}
                             </p>
-                            <p className="mb-3 text-gray-900">{q.question}</p>
+                            <p className="mb-3 text-gray-900 dark:text-gray-100">{q.question}</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               {q.options.map((opt, oi) => {
                                 const isSelected = selected === oi;
@@ -413,7 +408,7 @@ export default function UploadPage() {
                                   btnClasses +=
                                     ' border-red-500 bg-red-50 text-red-800';
                                 }
-                                const label = String.fromCharCode(65 + oi); // A,B,C,D
+                                const label = String.fromCharCode(65 + oi);
                                 return (
                                   <button
                                     key={oi}
@@ -440,7 +435,7 @@ export default function UploadPage() {
                     </div>
                   )}
                   {aiResult && (
-                    <div className="mt-4 bg-white border border-gray-200 rounded-lg p-3 text-sm text-gray-800 max-h-64 overflow-y-auto">
+                    <div className="mt-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-sm text-gray-800 dark:text-gray-200 max-h-64 overflow-y-auto">
                       <p className="font-semibold mb-1">
                         {aiAction === 'summarize' && 'Study Material Summary'}
                         {aiAction === 'analyze' && 'Content Analysis'}
@@ -452,25 +447,24 @@ export default function UploadPage() {
                 </div>
               )}
 
-              {/* Uploaded Files List */}
               {files.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Uploaded Files</h3>
                   <div className="space-y-3">
                     {files.map(file => (
                       <div
                         key={file.id}
-                        className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+                        className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700"
                       >
                         <div className="flex-shrink-0">
                           {getFileIcon(file.type)}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name}</p>
                             {getStatusBadge(file.status)}
                           </div>
-                          <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                             <span>{formatFileSize(file.size)}</span>
                             {file.status !== 'completed' && (
                               <>
@@ -480,7 +474,7 @@ export default function UploadPage() {
                             )}
                           </div>
                           {file.status !== 'completed' && (
-                            <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                            <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                               <div
                                 className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
                                 style={{ width: `${file.progress}%` }}
@@ -502,53 +496,49 @@ export default function UploadPage() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="w-80 space-y-6">
-            {/* Recent Activities */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-bold text-gray-900 mb-4">Recent Activities</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-300">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-4">Recent Activities</h3>
               <div className="space-y-3">
                 {recentActivities.map((activity, index) => (
-                  <div key={index} className="flex items-start space-x-3 pb-3 border-b border-gray-100 last:border-0">
+                  <div key={index} className="flex items-start space-x-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
                     <div className="flex-1">
-                      <p className="text-sm text-gray-900">
+                      <p className="text-sm text-gray-900 dark:text-gray-200">
                         <span className="font-medium">{activity.action}</span> {activity.material}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.time}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Study Tips */}
-            <div className="bg-blue-50 rounded-lg shadow-sm p-6">
-              <h3 className="font-bold text-gray-900 mb-4">Study Tips</h3>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg shadow-sm p-6 transition-colors duration-300">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-4">Study Tips</h3>
               <div className="space-y-3">
                 {studyTips.map((tip, index) => (
                   <div key={index} className="flex items-start space-x-2">
                     <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2" />
-                    <p className="text-sm text-gray-700">{tip}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{tip}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* System Status */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-bold text-gray-900 mb-4">System Status</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-300">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-4">System Status</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Storage Used</span>
-                  <span className="text-sm font-medium text-gray-900">0 MB / 5 GB</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Storage Used</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">0 MB / 5 GB</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div className="bg-green-500 h-2 rounded-full" style={{ width: '3%' }} />
                 </div>
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-sm text-gray-600">Files Processing</span>
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Files Processing</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {files.filter(f => f.status === 'processing' || f.status === 'uploading').length} active
                   </span>
                 </div>

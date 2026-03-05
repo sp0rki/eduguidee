@@ -11,7 +11,6 @@ const isPlaceholder =
 
 export const isSupabaseConfigured = !isPlaceholder;
 
-// Use dummy values if not configured so createClient doesn't throw (auth calls will use demo mode)
 const url = isPlaceholder ? 'https://placeholder.supabase.co' : supabaseUrl;
 const key = isPlaceholder ? 'placeholder-key' : supabaseAnonKey;
 

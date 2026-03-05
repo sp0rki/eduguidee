@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Simple PDF text extraction - just returns base64 for client-side processing
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -13,7 +12,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if it's a PDF
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
     
     if (!isPdf) {
@@ -23,11 +21,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Read file as Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
-    // Return the PDF buffer as base64 for client-side processing
     const base64 = buffer.toString('base64');
 
     return NextResponse.json({ 
