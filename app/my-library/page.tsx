@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Search, Filter, BookOpen, FileText, Video, Image, Calendar, Clock, Star, MoreVertical, Download, Trash2 } from 'lucide-react';
 import { RequireAuth } from '../../components/RequireAuth';
 import { AppNav } from '../../components/AppNav';
@@ -61,16 +62,19 @@ export default function LibraryPage() {
         <header className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <BookOpen className="w-8 h-8 text-blue-600" />
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
-                  <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
-                </div>
+            <div className="flex items-center space-x-3">
+              <BookOpen className="w-8 h-8 text-blue-600" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
+                <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
               </div>
-              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-                <span className="text-sm font-medium text-gray-700">My Account</span>
-              </button>
+            </div>
+            <Link
+              href="/account"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+            >
+              <span className="text-sm font-medium text-gray-700">My Account</span>
+            </Link>
             </div>
           </div>
         </header>

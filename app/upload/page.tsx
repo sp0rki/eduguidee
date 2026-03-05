@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import Link from 'next/link';
 import { Upload, FileText, Video, Image as ImageIcon, File, X, CheckCircle, Loader } from 'lucide-react';
 import { RequireAuth } from '../../components/RequireAuth';
 import { AppNav } from '../../components/AppNav';
@@ -12,11 +13,24 @@ interface UploadedFile {
   size: number;
   status: 'uploading' | 'processing' | 'completed' | 'error';
   progress: number;
+  file?: File;
 }
+
+type QuizQuestion = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+};
 
 export default function UploadPage() {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [aiResult, setAiResult] = useState<string | null>(null);
+  const [aiAction, setAiAction] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [quiz, setQuiz] = useState<QuizQuestion[] | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number | null>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -49,7 +63,8 @@ export default function UploadPage() {
       type: file.type,
       size: file.size,
       status: 'uploading',
-      progress: 0
+      progress: 0,
+      file,
     }));
 
     setFiles(prev => [...prev, ...newFiles]);
@@ -84,6 +99,79 @@ export default function UploadPage() {
         f.id === fileId ? { ...f, status: 'completed', progress: 100 } : f
       ));
     }, 2000);
+  };
+
+  const readFileAsText = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file);
+    });
+  };
+
+  const runAiAction = async (action: 'summarize' | 'quiz' | 'analyze' | 'keypoints') => {
+    if (files.length === 0) return;
+
+    const target = files[0];
+    if (!target.file) {
+      setAiError('Original file data is not available.');
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError(null);
+    setAiResult(null);
+    setQuiz(null);
+    setSelectedAnswers({});
+    setAiAction(action);
+
+    try {
+      let text = '';
+      if (
+        target.file.type.startsWith('text/') ||
+        target.name.toLowerCase().endsWith('.txt')
+      ) {
+        text = await readFileAsText(target.file);
+      } else {
+        text = `User uploaded file "${target.name}" of type ${target.type} and size ${formatFileSize(
+          target.size,
+        )}.`;
+      }
+
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          filename: target.name,
+          text,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('AI request failed');
+      }
+
+      const data = await response.json();
+      if (action === 'quiz' && data.quiz?.questions) {
+        setQuiz(data.quiz.questions as QuizQuestion[]);
+        setAiResult(null);
+      } else {
+        setAiResult(data.result ?? 'No response from AI service.');
+      }
+    } catch (err: any) {
+      setAiError(err.message ?? 'Failed to contact AI service.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAnswerClick = (questionIndex: number, optionIndex: number) => {
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [questionIndex]: optionIndex,
+    }));
   };
 
   const removeFile = (fileId: string) => {
@@ -150,9 +238,12 @@ export default function UploadPage() {
                 <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
               </div>
             </div>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+            <Link
+              href="/account"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+            >
               <span className="text-sm font-medium text-gray-700">My Account</span>
-            </button>
+            </Link>
           </div>
         </div>
       </header>
@@ -205,19 +296,106 @@ export default function UploadPage() {
                 <div className="mt-6 bg-gray-50 rounded-lg p-4">
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">What would you like to do?</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <button className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700">
+                    <button
+                      type="button"
+                      disabled={aiLoading}
+                      onClick={() => runAiAction('summarize')}
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                    >
                       📝 Summarize
                     </button>
-                    <button className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700">
+                    <button
+                      type="button"
+                      disabled={aiLoading}
+                      onClick={() => runAiAction('quiz')}
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                    >
                       ❓ Generate Quiz
                     </button>
-                    <button className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700">
+                    <button
+                      type="button"
+                      disabled={aiLoading}
+                      onClick={() => runAiAction('analyze')}
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                    >
                       🔍 Analyze Content
                     </button>
-                    <button className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700">
+                    <button
+                      type="button"
+                      disabled={aiLoading}
+                      onClick={() => runAiAction('keypoints')}
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700 disabled:opacity-60"
+                    >
                       💡 Extract Key Points
                     </button>
                   </div>
+                  {aiError && (
+                    <p className="mt-3 text-xs text-red-600">
+                      {aiError}
+                    </p>
+                  )}
+                  {quiz && aiAction === 'quiz' && (
+                    <div className="mt-4 bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-800 max-h-96 overflow-y-auto space-y-4">
+                      {quiz.map((q, qi) => {
+                        const selected = selectedAnswers[qi] ?? null;
+                        return (
+                          <div key={qi} className="border-b border-gray-100 pb-4 last:border-0">
+                            <p className="font-semibold mb-2">
+                              Question {qi + 1}
+                            </p>
+                            <p className="mb-3 text-gray-900">{q.question}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {q.options.map((opt, oi) => {
+                                const isSelected = selected === oi;
+                                const isCorrect = oi === q.correctIndex;
+                                let btnClasses =
+                                  'w-full text-left px-3 py-2 rounded-lg border text-sm transition';
+                                if (!isSelected) {
+                                  btnClasses +=
+                                    ' border-gray-300 hover:bg-gray-50 text-gray-800';
+                                } else if (isCorrect) {
+                                  btnClasses +=
+                                    ' border-green-500 bg-green-50 text-green-800';
+                                } else {
+                                  btnClasses +=
+                                    ' border-red-500 bg-red-50 text-red-800';
+                                }
+                                const label = String.fromCharCode(65 + oi); // A,B,C,D
+                                return (
+                                  <button
+                                    key={oi}
+                                    type="button"
+                                    onClick={() => handleAnswerClick(qi, oi)}
+                                    className={btnClasses}
+                                  >
+                                    <span className="font-semibold mr-2">{label}.</span>
+                                    {opt}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {selected != null && (
+                              <p className={`mt-2 text-xs font-medium ${selected === q.correctIndex ? 'text-green-700' : 'text-red-700'}`}>
+                                {selected === q.correctIndex
+                                  ? '✅ Correct!'
+                                  : '❌ Not quite right, try another option.'}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {aiResult && (
+                    <div className="mt-4 bg-white border border-gray-200 rounded-lg p-3 text-sm text-gray-800 max-h-64 overflow-y-auto">
+                      <p className="font-semibold mb-1">
+                        {aiAction === 'summarize' && 'Study Material Summary'}
+                        {aiAction === 'analyze' && 'Content Analysis'}
+                        {aiAction === 'keypoints' && 'Key Points'}
+                      </p>
+                      <p className="whitespace-pre-wrap">{aiResult}</p>
+                    </div>
+                  )}
                 </div>
               )}
 

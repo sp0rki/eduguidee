@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { TrendingUp, Target, Award, BookOpen, BarChart3 } from 'lucide-react';
 import { RequireAuth } from '../../components/RequireAuth';
 import { AppNav } from '../../components/AppNav';
 
-const studyProgress = [
-  { subject: 'Mathematics', uploaded: 12, examined: 8, quizzesTaken: 15, avgScore: 85 },
-  { subject: 'History', uploaded: 8, examined: 6, quizzesTaken: 10, avgScore: 78 },
-  { subject: 'Chemistry', uploaded: 10, examined: 7, quizzesTaken: 12, avgScore: 82 },
-  { subject: 'Biology', uploaded: 6, examined: 5, quizzesTaken: 8, avgScore: 88 },
-  { subject: 'Physics', uploaded: 9, examined: 6, quizzesTaken: 11, avgScore: 80 },
-];
+const studyProgress: Array<{
+  subject: string;
+  uploaded: number;
+  examined: number;
+  quizzesTaken: number;
+  avgScore: number;
+}> = [];
 
 const performanceTrends = [
   { date: 'Mon', score: 75 },
@@ -23,17 +24,14 @@ const performanceTrends = [
   { date: 'Sun', score: 87 },
 ];
 
-const recentActivities = [
-  { action: 'Completed Quiz', material: 'Calculus Chapter 5', time: '2 hours ago', score: 92 },
-  { action: 'Studied', material: 'World War II Notes', time: '5 hours ago' },
-  { action: 'Generated Summary', material: 'Chemistry Lab Report', time: '1 day ago' },
-];
+const recentActivities: Array<{
+  action: string;
+  material: string;
+  time: string;
+  score?: number;
+}> = [];
 
-const recommendations = [
-  'Focus on Chemistry - your quiz scores have dropped by 5% this week',
-  'Great progress in Biology! Keep up the momentum',
-  'Consider reviewing Mathematics materials from 2 weeks ago',
-];
+const recommendations: string[] = [];
 
 export default function StudyInsightsPage() {
   const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'year'>('week');
@@ -45,16 +43,19 @@ export default function StudyInsightsPage() {
         <header className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <BarChart3 className="w-8 h-8 text-blue-600" />
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
-                  <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
-                </div>
+            <div className="flex items-center space-x-3">
+              <BarChart3 className="w-8 h-8 text-blue-600" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">EduGuide</h1>
+                <p className="text-sm text-gray-600">AI-Assisted Learning Companion</p>
               </div>
-              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-                <span className="text-sm font-medium text-gray-700">My Account</span>
-              </button>
+            </div>
+            <Link
+              href="/account"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+            >
+              <span className="text-sm font-medium text-gray-700">My Account</span>
+            </Link>
             </div>
           </div>
         </header>
@@ -72,9 +73,9 @@ export default function StudyInsightsPage() {
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                       <BookOpen className="w-5 h-5 text-blue-600" />
                     </div>
-                    <span className="text-xs text-green-600 font-medium">+12%</span>
+                    <span className="text-xs text-gray-500 font-medium">0%</span>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">45</p>
+                  <p className="text-2xl font-bold text-gray-900">0</p>
                   <p className="text-sm text-gray-600">Materials Uploaded</p>
                 </div>
 
@@ -83,9 +84,9 @@ export default function StudyInsightsPage() {
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                       <Target className="w-5 h-5 text-purple-600" />
                     </div>
-                    <span className="text-xs text-green-600 font-medium">+8%</span>
+                    <span className="text-xs text-gray-500 font-medium">0%</span>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">32</p>
+                  <p className="text-2xl font-bold text-gray-900">0</p>
                   <p className="text-sm text-gray-600">Examinees Created</p>
                 </div>
 
@@ -94,9 +95,9 @@ export default function StudyInsightsPage() {
                     <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                       <Award className="w-5 h-5 text-green-600" />
                     </div>
-                    <span className="text-xs text-green-600 font-medium">+5%</span>
+                    <span className="text-xs text-gray-500 font-medium">0%</span>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">56</p>
+                  <p className="text-2xl font-bold text-gray-900">0</p>
                   <p className="text-sm text-gray-600">Quizzes Taken</p>
                 </div>
 
@@ -105,9 +106,9 @@ export default function StudyInsightsPage() {
                     <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-yellow-600" />
                     </div>
-                    <span className="text-xs text-green-600 font-medium">+3%</span>
+                    <span className="text-xs text-gray-500 font-medium">0%</span>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">84%</p>
+                  <p className="text-2xl font-bold text-gray-900">0%</p>
                   <p className="text-sm text-gray-600">Avg Quiz Score</p>
                 </div>
               </div>
@@ -210,40 +211,55 @@ export default function StudyInsightsPage() {
               {/* Recent Activities */}
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="font-bold text-gray-900 mb-4">Recent Activities</h3>
-                <div className="space-y-3">
-                  {recentActivities.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-start space-x-3 pb-3 border-b border-gray-100 last:border-0"
-                    >
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">
-                          <span className="font-medium">{activity.action}</span> {activity.material}
-                        </p>
-                        {activity.score && (
-                          <p className="text-xs text-green-600 font-medium mt-1">
-                            Score: {activity.score}%
+                {recentActivities.length === 0 ? (
+                  <p className="text-sm text-gray-600">
+                    Nothing here yet. Once you start uploading materials and taking quizzes,
+                    your recent activity will show up in this panel.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {recentActivities.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start space-x-3 pb-3 border-b border-gray-100 last:border-0"
+                      >
+                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-900">
+                            <span className="font-medium">{activity.action}</span>{' '}
+                            {activity.material}
                           </p>
-                        )}
-                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                          {activity.score && (
+                            <p className="text-xs text-green-600 font-medium mt-1">
+                              Score: {activity.score}%
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Personalized Recommendations */}
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-sm p-6">
                 <h3 className="font-bold text-gray-900 mb-4">Personalized Tips</h3>
-                <div className="space-y-3">
-                  {recommendations.map((tip, index) => (
-                    <div key={index} className="flex items-start space-x-2 bg-white p-3 rounded-lg">
-                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                      <p className="text-sm text-gray-700">{tip}</p>
-                    </div>
-                  ))}
-                </div>
+                {recommendations.length === 0 ? (
+                  <p className="text-sm text-gray-700">
+                    No personalized tips yet. As you study and take quizzes, we&apos;ll generate
+                    smart recommendations to help you improve.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {recommendations.map((tip, index) => (
+                      <div key={index} className="flex items-start space-x-2 bg-white p-3 rounded-lg">
+                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
+                        <p className="text-sm text-gray-700">{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* System Status */}
@@ -252,14 +268,14 @@ export default function StudyInsightsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Storage Used</span>
-                    <span className="text-sm font-medium text-gray-900">153 MB / 5 GB</span>
+                    <span className="text-sm font-medium text-gray-900">0 MB / 5 GB</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '3%' }} />
+                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '0%' }} />
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-sm text-gray-600">Study Streak</span>
-                    <span className="text-sm font-medium text-orange-600">7 days 🔥</span>
+                    <span className="text-sm font-medium text-gray-500">No streak yet</span>
                   </div>
                 </div>
               </div>
