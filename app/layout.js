@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "EduGuide – AI-Assisted Learning Companion",
+  title: "EduGuide",
   description: "AI-powered study assistant for students",
 };
 
